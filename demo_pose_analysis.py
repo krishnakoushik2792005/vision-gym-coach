@@ -4,16 +4,15 @@ import numpy as np
 import csv
 from pathlib import Path
 
-# ─── 1. Folder Setup ────────────────────────────────────────────────
 input_folder = Path("input_folder")    # Put your .jpg images here
 output_folder = Path("output_folder")          # Annotated outputs go here
 output_folder.mkdir(exist_ok=True)
 
-# ─── 2. Mediapipe & Drawing Setup ──────────────────────────────────
+
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-# ─── 3. Utility Functions ───────────────────────────────────────────
+
 
 def calculate_angle(a, b, c):
     """Return angle (in degrees) at point b formed by a–b–c."""
@@ -30,7 +29,7 @@ def _dist(a, b):
     """Euclidean distance between two points."""
     return np.linalg.norm(np.array(a) - np.array(b))
 
-# ─── 4. Pull-Up Metric Functions ────────────────────────────────────
+
 
 def elbow_angle(lm): 
     return calculate_angle(_p(lm, 12), _p(lm, 14), _p(lm, 16))
@@ -56,7 +55,7 @@ def scap_elevation_deg(lm):
 def chin_over_bar(lm, bar_y=0.4): 
     return lm[0].y < bar_y
 
-# ─── 5. Classification Logic ────────────────────────────────────────
+
 
 fault_map = {
     "TORSO_LEAN":   lambda D: D["torso_angle"] > 15,
@@ -70,7 +69,7 @@ def classify_faults(metrics):
     faults = [label for label, rule in fault_map.items() if rule(metrics)]
     return faults if faults else ["PERFECT_FORM"]
 
-# ─── 6. Batch Processing ─────────────────────────────────────────────
+
 
 def main():
     # CSV header
